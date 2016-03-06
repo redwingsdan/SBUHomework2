@@ -7,13 +7,39 @@
 <properties>
     <property_list>
         <!-- PROGRAM ICON FILES -->
-        
-        <!-- TOOLTIPS FOR BUTTONS -->
-	
-	<!-- MESSAGES -->
-		
-	<!-- ERROR MESSAGES AND TITLES FOR THEIR DIALOGS -->
+        <property name="REMOVE_ICON"	    value="Remove.png"></property>
+        <property name="OUTLINE_ICON"	    value="Snapshot.png"></property>
+        <property name="FILL_ICON"	    value="Snapshot.png"></property>
+        <property name="ELLIPSE_ICON"	    value="Ellipse.png"></property>
+        <property name="RECTANGLE_ICON"	    value="Rect.png"></property>
+        <property name="SELECTION_TOOL_ICON" value="SelectionTool.png"></property>
 
+        <!-- TOOLTIPS FOR BUTTONS -->
+	 <property name="REMOVE_TOOLTIP"	    value="Remove Element"></property>
+         <property name="OUTLINE_TOOLTIP"	    value="Change size of shape outline"></property>
+         <property name="FILL_TOOLTIP"	    value="Fill in the shape with color"></property>
+         <property name="ELLIPSE_TOOLTIP"	    value="Create an ellipse"></property>
+         <property name="RECTANGLE_TOOLTIP"	    value="Create a rectangle"></property>
+         <property name="SELECTION_TOOL_TOOLTIP" value="Select a shape"></property>
+	<!-- MESSAGES -->
+	<property name="REMOVE_MESSAGE"	    value="Are you sure you wish to remove that element?"></property>	
+	<!-- ERROR MESSAGES AND TITLES FOR THEIR DIALOGS -->
+        <property name="ATTRIBUTE_UPDATE_ERROR_MESSAGE"	    value="WARNING: An error occured updating the element's attribute."></property>
+	<property name="ATTRIBUTE_UPDATE_ERROR_TITLE"	    value="Attribute Update Error"></property>
+	<property name="ADD_ELEMENT_ERROR_MESSAGE"	    value="WARNING: An error occured adding the element."></property>
+	<property name="ADD_ELEMENT_ERROR_TITLE"	    value="Add Element Error"></property>
+	<property name="REMOVE_ELEMENT_ERROR_MESSAGE"	    value="WARNING: An error occured removing the element."></property>
+	<property name="REMOVE_ELEMENT_ERROR_TITLE"	    value="Remove Element Error"></property>
+	<property name="ILLEGAL_NODE_REMOVAL_ERROR_MESSAGE" value="WARNING: That element cannot be removed."></property>
+	<property name="ILLEGAL_NODE_REMOVAL_ERROR_TITLE"   value="Illegal Node Removal Error"></property>
+	<property name="TEMP_PAGE_LOAD_ERROR_MESSAGE"	    value="WARNING: An error occured loading the starting temp page."></property>
+	<property name="TEMP_PAGE_LOAD_ERROR_TITLE"	    value="Temp Page Loading Error"></property>
+	<property name="CSS_EXPORT_ERROR_MESSAGE"	    value="WARNING: An error occured exporting the CSS file."></property>
+	<property name="CSS_EXPORT_ERROR_TITLE"		    value="CSS Export Error"></property>
+	<property name="UPDATE_ERROR_MESSAGE"		    value="An error occured updating the UI"></property>
+	<property name="UPDATE_ERROR_TITLE"		    value="UI Update Error"></property>
+
+        
     </property_list>
     <property_options_list>
     </property_options_list>

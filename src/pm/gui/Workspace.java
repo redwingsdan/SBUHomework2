@@ -10,19 +10,30 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
+import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import static pm.PropertyType.RECTANGLE_ICON;
+import properties_manager.PropertiesManager;
 import saf.ui.AppGUI;
 import saf.AppTemplate;
 import saf.components.AppWorkspaceComponent;
+import static saf.settings.AppStartupConstants.FILE_PROTOCOL;
+import static saf.settings.AppStartupConstants.PATH_IMAGES;
 import saf.ui.AppMessageDialogSingleton;
 import saf.ui.AppYesNoCancelDialogSingleton;
 
@@ -45,6 +56,8 @@ public class Workspace extends AppWorkspaceComponent {
     BorderPane pane;
     Pane shapeToolbar;
     Pane colorToolbar;
+    
+    BorderPane workspaceSplitPane;
     
     double starting_point_x, starting_point_y ;
 
@@ -132,7 +145,7 @@ public class Workspace extends AppWorkspaceComponent {
     hbox.setSpacing(10);
     hbox.setMinWidth(200);
     hbox.setMaxWidth(200);
-    hbox.setMinHeight(20);
+    hbox.setMinHeight(2000);
     hbox.setMaxHeight(2000);
     //hbox.setStyle("-fx-background-color: #336699;");
 
@@ -171,25 +184,37 @@ public class Workspace extends AppWorkspaceComponent {
       colorPicker3.setLayoutX(0);
       colorPicker3.setLayoutY(900);
       
-    hbox.getChildren().addAll(slider, colorPicker, colorPicker2, colorPicker3);
+      Text t1 = new Text();
+      t1.setText("Fill Color");
+      
+      Text t2 = new Text();
+      t2.setText("Border Color");
+      
+      Text t3 = new Text();
+      t3.setText("Background Color");
+      
+      Text t4 = new Text();
+      t4.setText("Border Thickness");
+      
+    hbox.getChildren().addAll(t1, colorPicker, t2, colorPicker2, t3, colorPicker3, t4, slider);
 
     return hbox;
 }
    
-   public VBox addVBox(Button rect, Button ellipse, Button clear){
-    VBox vbox = new VBox();
+   public HBox addVBox(Button rect, Button ellipse, Button clear){
+    HBox vbox = new HBox();
     vbox.setPadding(new Insets(10));
     vbox.setSpacing(8);
 
     
-      rect.setText("RECTANGLE");
+     // rect.setText("RECTANGLE");
       rect.setLayoutY(20);
       
-      ellipse.setText("ELLIPSE");
+     // ellipse.setText("ELLIPSE");
       ellipse.setLayoutY(50);
       
-      clear.setText("CLEAR");
-      clear.setLayoutY(100);
+     // clear.setText("CLEAR");
+      clear.setLayoutY(50);
         
       vbox.getChildren().addAll(rect, ellipse, clear);
 
@@ -219,6 +244,7 @@ public class Workspace extends AppWorkspaceComponent {
         shapeToolbar = new FlowPane(Orientation.VERTICAL);
         colorToolbar = new FlowPane(Orientation.VERTICAL);
         
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         
         //gui.getPrimaryScene()
         gui.getWindow().setTitle("Pose Maker");
@@ -230,6 +256,17 @@ public class Workspace extends AppWorkspaceComponent {
           Button rect = new Button();
           Button ellipse = new Button();
           Button clear = new Button();
+          
+          //String icon = RECTANGLE_ICON.toString();
+          //String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
+          Image buttonImage = new Image("file:./images/Rect.png");
+          rect.setGraphic(new ImageView(buttonImage));
+          
+          Image buttonImage2 = new Image("file:./images/Ellipse.png");
+          ellipse.setGraphic(new ImageView(buttonImage2));
+          
+          Image buttonImage3 = new Image("file:./images/Remove.png");
+          clear.setGraphic(new ImageView(buttonImage3));
           
           rect.setOnAction((ActionEvent t) -> {
        setCurrentValue("RECTANGLE");
@@ -255,26 +292,49 @@ public class Workspace extends AppWorkspaceComponent {
       });
         
         
-        colorToolbar.getChildren().add(addVBox(rect, ellipse, clear));
+        colorToolbar.getChildren().add(addVBox(clear, rect, ellipse));
         VBox hbox = addHBox(slider, colorPicker, colorPicker2, colorPicker3);
         shapeToolbar.getChildren().add(hbox);
         
+        workspaceSplitPane = new BorderPane();
+        workspaceSplitPane.setLeft(colorToolbar);
+        workspaceSplitPane.setBottom(shapeToolbar);
+        workspaceSplitPane.setStyle("-fx-background-color: #8fd8d8;");
         
-        pane.setBottom(shapeToolbar);
-        pane.setLeft(colorToolbar);
+        
+        pane.setRight(group_for_rectangles);
+        
+      //  pane.setBottom(shapeToolbar);
+      //  pane.setLeft(colorToolbar);
+        //pane.setCenter(group_for_rectangles);
+        
+      //  GridPane grid = new GridPane();
+       // grid.setHgap(50);
+       // grid.setVgap(50);
+       // grid.add(group_for_rectangles, 2, 2);
         
         workspace = new Pane();
-        workspace.getChildren().add(pane);
-        workspace.getChildren().add(group_for_rectangles);
+       // workspace.getChildren().add(pane);
+       // workspace.getChildren().add(group_for_rectangles);
         
+       pane.setLayoutX(200);
+       pane.setLayoutY(0);
+       pane.setMinHeight(50);
+       pane.setMinWidth(50);
+       pane.setMaxHeight(1000);
+       pane.setMaxWidth(1000);
+       workspace.getChildren().add(workspaceSplitPane);
+       workspace.getChildren().add(pane);
+      // workspace.getChildren().add(group_for_rectangles);
         //gui.getPrimaryScene() = new Scene(workspace);
       
       gui.getPrimaryScene().setFill( Color.BLACK ) ;
+      //workspace.setStyle();
       
        colorPicker3.setOnAction((ActionEvent t) -> {
         gui.getPrimaryScene().setFill(colorPicker3.getValue());
         System.out.println(colorPicker3.getValue().toString());
-        group_for_rectangles.setStyle("-fx-background-color: #" + colorPicker3.getValue().toString().substring(2,8) + ";");
+        pane.setStyle("-fx-background-color: #" + colorPicker3.getValue().toString().substring(2,8) + ";");
         System.out.println(group_for_rectangles.getStyle());
        // workspace.getChildren().add(group_for_rectangles);
         //group_for_rectangles.setStyle("-fx-background-color: black;");
@@ -292,8 +352,8 @@ public class Workspace extends AppWorkspaceComponent {
           System.out.println(getCurrentValue());
          if ( new_rectangle_is_being_drawn == false & getCurrentValue().equals("RECTANGLE"))
          {
-            starting_point_x = event.getSceneX() ;
-            starting_point_y = event.getSceneY() ;
+            starting_point_x = (event.getSceneX() );
+            starting_point_y = (event.getSceneY() );
            // starting_point_x = event.getScreenX();
            //starting_point_x = event.getX();
           // starting_point_y = event.getY();
@@ -330,8 +390,8 @@ public class Workspace extends AppWorkspaceComponent {
       {
          if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE"))
          {
-            double current_ending_point_x = event.getSceneX() ;
-            double current_ending_point_y = event.getSceneY() ;
+            double current_ending_point_x = (event.getSceneX());
+            double current_ending_point_y = (event.getSceneY());
             //double current_ending_point_x = event.getX() ;
             //double current_ending_point_y = event.getY() ;
             //double current_ending_point_x = event.getScreenX();
@@ -385,6 +445,13 @@ public class Workspace extends AppWorkspaceComponent {
              new_ellipse_is_being_drawn = false;
          }
       } ) ;
+      
+      new_rectangle = new Rectangle();
+      new_rectangle.setX( 0 ) ;
+      new_rectangle.setY( 0 ) ;
+      new_rectangle.setWidth( 10 ) ;
+      new_rectangle.setHeight( 10 ) ;
+       group_for_rectangles.getChildren().add( new_rectangle ) ;
     }
     
     /**
