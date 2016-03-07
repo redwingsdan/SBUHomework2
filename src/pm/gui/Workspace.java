@@ -3,6 +3,7 @@ package pm.gui;
 import java.io.IOException;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
@@ -11,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,7 +27,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import static pm.PropertyType.RECTANGLE_ICON;
 import properties_manager.PropertiesManager;
@@ -71,10 +76,83 @@ public class Workspace extends AppWorkspaceComponent {
    
    boolean new_ellipse_is_being_drawn = false ;
    
+   boolean item_selected = false;
+   
    String currentValue = "RECTANGLE";
+   
+   double orgSceneX, orgSceneY;
+    double orgTranslateX, orgTranslateY;
    
    AppMessageDialogSingleton messageDialog;
    AppYesNoCancelDialogSingleton yesNoCancelDialog;
+   
+    EventHandler<MouseEvent> rectangleOnMousePressedEventHandler = 
+        new EventHandler<MouseEvent>() {
+ 
+        @Override
+        public void handle(MouseEvent t) {
+            if(getSelectedItem() == true)
+            {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+            orgTranslateX = ((Rectangle)(t.getSource())).getTranslateX();
+            orgTranslateY = ((Rectangle)(t.getSource())).getTranslateY();
+            }
+        }
+    };
+     
+    EventHandler<MouseEvent> rectangleOnMouseDraggedEventHandler = 
+        new EventHandler<MouseEvent>() {
+ 
+        @Override
+        public void handle(MouseEvent t) {
+            if(getSelectedItem() == true)
+            {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+            double newTranslateX = orgTranslateX + offsetX;
+            double newTranslateY = orgTranslateY + offsetY;
+             
+            ((Rectangle)(t.getSource())).setTranslateX(newTranslateX);
+            ((Rectangle)(t.getSource())).setTranslateY(newTranslateY);
+            }
+        }
+    };
+    
+    
+    EventHandler<MouseEvent> ellipseOnMousePressedEventHandler = 
+        new EventHandler<MouseEvent>() {
+ 
+        @Override
+        public void handle(MouseEvent t) {
+            if(getSelectedItem() == true)
+            {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+            orgTranslateX = ((Ellipse)(t.getSource())).getTranslateX();
+            orgTranslateY = ((Ellipse)(t.getSource())).getTranslateY();
+            }
+        }
+    };
+    
+    
+    EventHandler<MouseEvent> ellipseOnMouseDraggedEventHandler = 
+        new EventHandler<MouseEvent>() {
+ 
+        @Override
+        public void handle(MouseEvent t) {
+            if(getSelectedItem() == true)
+            {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+            double newTranslateX = orgTranslateX + offsetX;
+            double newTranslateY = orgTranslateY + offsetY;
+             
+            ((Ellipse)(t.getSource())).setTranslateX(newTranslateX);
+            ((Ellipse)(t.getSource())).setTranslateY(newTranslateY);
+            }
+        }
+    };
    
    void setCurrentValue(String s)
    {
@@ -86,6 +164,14 @@ public class Workspace extends AppWorkspaceComponent {
        return currentValue;
    }
 
+   void setSelectedItem(boolean b) {
+        item_selected = b;
+    }
+   
+   boolean getSelectedItem()
+   {
+       return item_selected;
+   }
    //  The following method adjusts coordinates so that the rectangle
    //  is shown "in a correct way" in relation to the mouse movement.
 
@@ -153,8 +239,8 @@ public class Workspace extends AppWorkspaceComponent {
    
    public VBox addHBox(Slider slider, ColorPicker colorPicker, ColorPicker colorPicker2, ColorPicker colorPicker3) {
     VBox hbox = new VBox();
-    hbox.setPadding(new Insets(10, 10, 10, 10));
-    hbox.setSpacing(10);
+    hbox.setPadding(new Insets(15, 15, 15, 15));
+    hbox.setSpacing(20);
     hbox.setMinWidth(200);
     hbox.setMaxWidth(200);
     hbox.setMinHeight(2000);
@@ -199,24 +285,28 @@ public class Workspace extends AppWorkspaceComponent {
       
       Text t1 = new Text();
       t1.setText("Fill Color");
+      t1.setFont(Font.font ("Verdana", FontWeight.BOLD, 20));
       
       Text t2 = new Text();
       t2.setText("Border Color");
+      t2.setFont(Font.font ("Verdana", FontWeight.BOLD, 20));
       
       Text t3 = new Text();
       t3.setText("Background Color");
+      t3.setFont(Font.font ("Verdana", FontWeight.BOLD, 20));
       
       Text t4 = new Text();
       t4.setText("Border Thickness");
+      t4.setFont(Font.font ("Verdana", FontWeight.BOLD, 20));
       
     hbox.getChildren().addAll(t1, colorPicker, t2, colorPicker2, t3, colorPicker3, t4, slider);
 
     return hbox;
 }
    
-   public HBox addVBox(Button rect, Button ellipse, Button clear){
+   public HBox addVBox(ToggleButton rect, Button ellipse, Button clear, Button select){
     HBox vbox = new HBox();
-    vbox.setPadding(new Insets(10));
+    vbox.setPadding(new Insets(20));
     vbox.setSpacing(12);
 
     
@@ -224,12 +314,14 @@ public class Workspace extends AppWorkspaceComponent {
       rect.setLayoutY(20);
       
      // ellipse.setText("ELLIPSE");
-      ellipse.setLayoutY(50);
+      ellipse.setLayoutY(20);
       
      // clear.setText("CLEAR");
-      clear.setLayoutY(50);
+      clear.setLayoutY(20);
+      
+      select.setLayoutY(20);
         
-      vbox.getChildren().addAll(rect, ellipse, clear);
+      vbox.getChildren().addAll(rect, ellipse, clear, select);
 
 
     return vbox;
@@ -269,6 +361,7 @@ public class Workspace extends AppWorkspaceComponent {
           Button rect = new Button();
           Button ellipse = new Button();
           Button clear = new Button();
+          ToggleButton select = new ToggleButton();
           
           //String icon = RECTANGLE_ICON.toString();
           //String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
@@ -281,12 +374,19 @@ public class Workspace extends AppWorkspaceComponent {
           Image buttonImage3 = new Image("file:./images/Remove.png");
           clear.setGraphic(new ImageView(buttonImage3));
           
+          Image buttonImage4 = new Image("file:./images/SelectionTool.png");
+          select.setGraphic(new ImageView(buttonImage4));
+          
           rect.setOnAction((ActionEvent t) -> {
        setCurrentValue("RECTANGLE");
+       select.setSelected(false);
+       setSelectedItem(false);
    });
       
        ellipse.setOnAction((ActionEvent t) -> {
        setCurrentValue("ELLIPSE");
+       select.setSelected(false);
+       setSelectedItem(false);
    });
       
        colorPicker.setOnAction((ActionEvent t) -> {
@@ -305,7 +405,7 @@ public class Workspace extends AppWorkspaceComponent {
       });
         
         
-        colorToolbar.getChildren().add(addVBox(clear, rect, ellipse));
+        colorToolbar.getChildren().add(addVBox(select, clear, rect, ellipse));
         VBox hbox = addHBox(slider, colorPicker, colorPicker2, colorPicker3);
         shapeToolbar.getChildren().add(hbox);
         
@@ -333,7 +433,7 @@ public class Workspace extends AppWorkspaceComponent {
        // workspace.getChildren().add(pane);
        // workspace.getChildren().add(group_for_rectangles);
         
-       pane.setLayoutX(200);
+       pane.setLayoutX(280);
        pane.setLayoutY(0);
        pane.setMinHeight(920);
        pane.setMinWidth(1700);
@@ -365,16 +465,24 @@ public class Workspace extends AppWorkspaceComponent {
       
       clear.setOnAction((ActionEvent t) ->{
            pane.getChildren().clear();
+           select.setSelected(false);
+           setSelectedItem(false);
        // group_for_rectangles.getChildren().addAll(colorPicker, colorPicker2, colorPicker3, slider, rect, ellipse, clear);
        });
       
+      select.setOnAction((ActionEvent t) -> {
+           setSelectedItem(!getSelectedItem());
+           select.setSelected(true);
+           setSelectedItem(true);
+           System.out.println(getSelectedItem());
+       });
       
       pane.setOnMousePressed( ( MouseEvent event ) ->
       {
           System.out.println(getCurrentValue());
-         if ( new_rectangle_is_being_drawn == false & getCurrentValue().equals("RECTANGLE"))
+         if ( new_rectangle_is_being_drawn == false & getCurrentValue().equals("RECTANGLE") & getSelectedItem() == false)
          {
-            starting_point_x = (event.getSceneX() -200);
+            starting_point_x = (event.getSceneX() -210);
             starting_point_y = (event.getSceneY() -75);
            // starting_point_x = event.getScreenX();
            //starting_point_x = event.getX();
@@ -382,6 +490,8 @@ public class Workspace extends AppWorkspaceComponent {
            // starting_point_y = event.getScreenY();
 
             new_rectangle = new Rectangle() ;
+            new_rectangle.setOnMousePressed(rectangleOnMousePressedEventHandler);
+            new_rectangle.setOnMouseDragged(rectangleOnMouseDraggedEventHandler);
 
             // A non-finished rectangle has always the same color.
             new_rectangle.setFill( Color.SNOW ) ; // almost white color
@@ -393,12 +503,14 @@ public class Workspace extends AppWorkspaceComponent {
             new_rectangle_is_being_drawn = true ;
          }
          
-         else if( new_ellipse_is_being_drawn == false & getCurrentValue().equals("ELLIPSE"))
+         else if( new_ellipse_is_being_drawn == false & getCurrentValue().equals("ELLIPSE") & getSelectedItem() == false)
          {
-             starting_point_x = (event.getSceneX() -200);
-             starting_point_y = (event.getSceneY() -75);
+             starting_point_x = (event.getSceneX() );
+             starting_point_y = (event.getSceneY() );
              
              new_ellipse = new Ellipse();
+             new_ellipse.setOnMousePressed(ellipseOnMousePressedEventHandler);
+             new_ellipse.setOnMouseDragged(ellipseOnMouseDraggedEventHandler);
              
              new_ellipse.setFill(Color.SNOW);
              new_ellipse.setStroke(Color.BLACK);
@@ -411,7 +523,7 @@ public class Workspace extends AppWorkspaceComponent {
 
       pane.setOnMouseDragged( ( MouseEvent event ) ->
       {
-         if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE"))
+         if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE") & getSelectedItem() == false)
          {
             double current_ending_point_x = (event.getSceneX() +9);
             double current_ending_point_y = (event.getSceneY() +38);
@@ -425,9 +537,9 @@ public class Workspace extends AppWorkspaceComponent {
                   current_ending_point_y = 920;
               }
             
-            if(current_ending_point_x > 1700)
+            if(current_ending_point_x > 1620)
               {
-                  current_ending_point_x = 1700;
+                  current_ending_point_x = 1620;
               }
             
             adjust_rectangle_properties( starting_point_x,
@@ -438,7 +550,7 @@ public class Workspace extends AppWorkspaceComponent {
                                          pane) ;
          }
          
-         if(new_ellipse_is_being_drawn == true & getCurrentValue().equals("ELLIPSE"))
+         if(new_ellipse_is_being_drawn == true & getCurrentValue().equals("ELLIPSE") & getSelectedItem() == false)
          {
             double current_ending_point_x = (event.getSceneX() +9);
             double current_ending_point_y = (event.getSceneY() +38);
@@ -448,9 +560,9 @@ public class Workspace extends AppWorkspaceComponent {
                   current_ending_point_y = 920;
               }
                        
-            if(current_ending_point_x > 1700)
+            if(current_ending_point_x > 1620)
               {
-                  current_ending_point_x = 1700;
+                  current_ending_point_x = 1620;
               }
             
               
@@ -479,7 +591,7 @@ public class Workspace extends AppWorkspaceComponent {
 
       pane.setOnMouseReleased( ( MouseEvent event ) ->
       {
-         if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE"))
+         if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE") & getSelectedItem() == false)
          {
             // Now the drawing of the new rectangle is finished.
             // Let's set the final color for the rectangle.
@@ -495,7 +607,7 @@ public class Workspace extends AppWorkspaceComponent {
             new_rectangle_is_being_drawn = false ;
          }
          
-         if(new_ellipse_is_being_drawn = true & getCurrentValue().equals("ELLIPSE"))
+         if(new_ellipse_is_being_drawn = true & getCurrentValue().equals("ELLIPSE") & getSelectedItem() == false)
          {
              
              new_ellipse.setFill(colorPicker.getValue());
@@ -507,6 +619,8 @@ public class Workspace extends AppWorkspaceComponent {
          }
       } ) ;
       
+      
+     
     //  new_rectangle = new Rectangle();
     //  new_rectangle.setX( 0 ) ;
     //  new_rectangle.setY( 0 ) ;
