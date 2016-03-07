@@ -93,7 +93,8 @@ public class Workspace extends AppWorkspaceComponent {
                                      double starting_point_y,
                                      double ending_point_x,
                                      double ending_point_y,
-                                     Rectangle given_rectangle )
+                                     Rectangle given_rectangle,
+                                     BorderPane pane)
    {
       given_rectangle.setX( starting_point_x ) ;
       given_rectangle.setY( starting_point_y ) ;
@@ -111,6 +112,17 @@ public class Workspace extends AppWorkspaceComponent {
          given_rectangle.setHeight( - given_rectangle.getHeight() ) ;
          given_rectangle.setY( given_rectangle.getY() - given_rectangle.getHeight() ) ;
       }
+      
+   /*   
+      if((given_rectangle.getY() + given_rectangle.getHeight()) > pane.getPrefHeight())
+      {
+        given_rectangle.setHeight(pane.getPrefHeight() - 50);
+      }
+      if(given_rectangle.getWidth() > pane.getPrefWidth())
+      {
+        given_rectangle.setWidth(pane.getPrefWidth());
+      }
+  */
    }
    
    
@@ -141,7 +153,7 @@ public class Workspace extends AppWorkspaceComponent {
    
    public VBox addHBox(Slider slider, ColorPicker colorPicker, ColorPicker colorPicker2, ColorPicker colorPicker3) {
     VBox hbox = new VBox();
-    hbox.setPadding(new Insets(15, 12, 15, 12));
+    hbox.setPadding(new Insets(10, 10, 10, 10));
     hbox.setSpacing(10);
     hbox.setMinWidth(200);
     hbox.setMaxWidth(200);
@@ -180,7 +192,8 @@ public class Workspace extends AppWorkspaceComponent {
       
       
       
-      colorPicker3.setValue(Color.BEIGE);
+     // colorPicker3.setValue(Color.BEIGE);
+     colorPicker3.setValue(Color.YELLOW);
       colorPicker3.setLayoutX(0);
       colorPicker3.setLayoutY(900);
       
@@ -204,7 +217,7 @@ public class Workspace extends AppWorkspaceComponent {
    public HBox addVBox(Button rect, Button ellipse, Button clear){
     HBox vbox = new HBox();
     vbox.setPadding(new Insets(10));
-    vbox.setSpacing(8);
+    vbox.setSpacing(12);
 
     
      // rect.setText("RECTANGLE");
@@ -299,7 +312,10 @@ public class Workspace extends AppWorkspaceComponent {
         workspaceSplitPane = new BorderPane();
         workspaceSplitPane.setLeft(colorToolbar);
         workspaceSplitPane.setBottom(shapeToolbar);
-        workspaceSplitPane.setStyle("-fx-background-color: #8fd8d8;");
+        workspaceSplitPane.getBottom().setStyle("-fx-background-color: #8fd8d8;");
+        workspaceSplitPane.getLeft().setStyle("-fx-background-color: #8fd8d8;");
+        
+        //group_for_rectangles.setTr
         
         
         pane.setRight(group_for_rectangles);
@@ -319,12 +335,18 @@ public class Workspace extends AppWorkspaceComponent {
         
        pane.setLayoutX(200);
        pane.setLayoutY(0);
-       pane.setMinHeight(50);
-       pane.setMinWidth(50);
-       pane.setMaxHeight(1000);
-       pane.setMaxWidth(1000);
+       pane.setMinHeight(920);
+       pane.setMinWidth(1700);
+       pane.setMaxHeight(920);
+       pane.setMaxWidth(1700);
+       pane.setPrefWidth(1700);
+       pane.setPrefHeight(920);
+       
        workspace.getChildren().add(workspaceSplitPane);
        workspace.getChildren().add(pane);
+       Pane x = new Pane();
+       x.setLayoutX(1700);
+       workspace.getChildren().add(x);
       // workspace.getChildren().add(group_for_rectangles);
         //gui.getPrimaryScene() = new Scene(workspace);
       
@@ -342,18 +364,18 @@ public class Workspace extends AppWorkspaceComponent {
         });
       
       clear.setOnAction((ActionEvent t) ->{
-           group_for_rectangles.getChildren().clear();
+           pane.getChildren().clear();
        // group_for_rectangles.getChildren().addAll(colorPicker, colorPicker2, colorPicker3, slider, rect, ellipse, clear);
        });
       
       
-      gui.getPrimaryScene().setOnMousePressed( ( MouseEvent event ) ->
+      pane.setOnMousePressed( ( MouseEvent event ) ->
       {
           System.out.println(getCurrentValue());
          if ( new_rectangle_is_being_drawn == false & getCurrentValue().equals("RECTANGLE"))
          {
-            starting_point_x = (event.getSceneX() );
-            starting_point_y = (event.getSceneY() );
+            starting_point_x = (event.getSceneX() -200);
+            starting_point_y = (event.getSceneY() -75);
            // starting_point_x = event.getScreenX();
            //starting_point_x = event.getX();
           // starting_point_y = event.getY();
@@ -365,50 +387,88 @@ public class Workspace extends AppWorkspaceComponent {
             new_rectangle.setFill( Color.SNOW ) ; // almost white color
             new_rectangle.setStroke( Color.BLACK ) ;
 
-            group_for_rectangles.getChildren().add( new_rectangle ) ;
+           // group_for_rectangles.getChildren().add( new_rectangle ) ;
+           pane.getChildren().add(new_rectangle);
    
             new_rectangle_is_being_drawn = true ;
          }
          
          else if( new_ellipse_is_being_drawn == false & getCurrentValue().equals("ELLIPSE"))
          {
-             starting_point_x = event.getSceneX() ;
-             starting_point_y = event.getSceneY() ;
+             starting_point_x = (event.getSceneX() -200);
+             starting_point_y = (event.getSceneY() -75);
              
              new_ellipse = new Ellipse();
              
              new_ellipse.setFill(Color.SNOW);
              new_ellipse.setStroke(Color.BLACK);
              
-             group_for_rectangles.getChildren().add(new_ellipse);
+             pane.getChildren().add(new_ellipse);
              
              new_ellipse_is_being_drawn = true;
          }
       } ) ;
 
-      gui.getPrimaryScene().setOnMouseDragged( ( MouseEvent event ) ->
+      pane.setOnMouseDragged( ( MouseEvent event ) ->
       {
          if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE"))
          {
-            double current_ending_point_x = (event.getSceneX());
-            double current_ending_point_y = (event.getSceneY());
+            double current_ending_point_x = (event.getSceneX() +9);
+            double current_ending_point_y = (event.getSceneY() +38);
             //double current_ending_point_x = event.getX() ;
             //double current_ending_point_y = event.getY() ;
             //double current_ending_point_x = event.getScreenX();
             //double current_ending_point_y = event.getScreenY();
 
+            if(current_ending_point_y > 920)
+              {
+                  current_ending_point_y = 920;
+              }
+            
+            if(current_ending_point_x > 1700)
+              {
+                  current_ending_point_x = 1700;
+              }
+            
             adjust_rectangle_properties( starting_point_x,
                                          starting_point_y,
                                          current_ending_point_x,
                                          current_ending_point_y,
-                                         new_rectangle ) ;
+                                         new_rectangle,
+                                         pane) ;
          }
          
          if(new_ellipse_is_being_drawn == true & getCurrentValue().equals("ELLIPSE"))
          {
-            double current_ending_point_x = event.getSceneX() ;
-            double current_ending_point_y = event.getSceneY() ;
+            double current_ending_point_x = (event.getSceneX() +9);
+            double current_ending_point_y = (event.getSceneY() +38);
 
+            if(current_ending_point_y > 920)
+              {
+                  current_ending_point_y = 920;
+              }
+                       
+            if(current_ending_point_x > 1700)
+              {
+                  current_ending_point_x = 1700;
+              }
+            
+              
+              if(new_ellipse.getCenterX()+new_ellipse.getRadiusX() > 1700 || new_ellipse.getCenterX()-new_ellipse.getRadiusX() < 0)
+              {
+                 // new_ellipse.setRadiusX(new_ellipse.getCenterX()-1500);
+                   current_ending_point_x = current_ending_point_x = new_ellipse.getCenterX()+new_ellipse.getRadiusX();
+                   //current_ending_point_x = 1700;
+              }
+              
+              if(new_ellipse.getCenterY()+new_ellipse.getRadiusY() > 920 || new_ellipse.getCenterY()-new_ellipse.getRadiusY() < 0 )
+              {
+                 // new_ellipse.setRadiusY(new_ellipse.getCenterY()-720);
+                  current_ending_point_y = new_ellipse.getCenterY()+new_ellipse.getRadiusY();
+                  ///current_ending_point_y = 920;
+              }
+
+            
             adjust_ellipse_properties( starting_point_x,
                                          starting_point_y,
                                          current_ending_point_x,
@@ -417,7 +477,7 @@ public class Workspace extends AppWorkspaceComponent {
          } 
       } ) ;
 
-      gui.getPrimaryScene().setOnMouseReleased( ( MouseEvent event ) ->
+      pane.setOnMouseReleased( ( MouseEvent event ) ->
       {
          if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE"))
          {
@@ -437,6 +497,7 @@ public class Workspace extends AppWorkspaceComponent {
          
          if(new_ellipse_is_being_drawn = true & getCurrentValue().equals("ELLIPSE"))
          {
+             
              new_ellipse.setFill(colorPicker.getValue());
              new_ellipse.setStroke(colorPicker2.getValue());
              new_ellipse.setStrokeWidth(slider.valueProperty().intValue());
@@ -446,12 +507,16 @@ public class Workspace extends AppWorkspaceComponent {
          }
       } ) ;
       
-      new_rectangle = new Rectangle();
-      new_rectangle.setX( 0 ) ;
-      new_rectangle.setY( 0 ) ;
-      new_rectangle.setWidth( 10 ) ;
-      new_rectangle.setHeight( 10 ) ;
-       group_for_rectangles.getChildren().add( new_rectangle ) ;
+    //  new_rectangle = new Rectangle();
+    //  new_rectangle.setX( 0 ) ;
+    //  new_rectangle.setY( 0 ) ;
+    //  new_rectangle.setWidth( 10 ) ;
+    //  new_rectangle.setHeight( 10 ) ;
+      
+  //    new_rectangle.setLayoutX(0);
+  //    new_rectangle.setLayoutY(0);
+      
+    //   group_for_rectangles.getChildren().add( new_rectangle ) ;
     }
     
     /**
