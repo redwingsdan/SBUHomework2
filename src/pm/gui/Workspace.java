@@ -70,7 +70,11 @@ public class Workspace extends AppWorkspaceComponent {
 
    Rectangle new_rectangle = null ;
    
+   Rectangle selected_rectangle = null;
+   
    Ellipse new_ellipse = null;
+   
+   Ellipse selected_ellipse = null;
 
    boolean new_rectangle_is_being_drawn = false ;
    
@@ -97,6 +101,9 @@ public class Workspace extends AppWorkspaceComponent {
             orgSceneY = t.getSceneY();
             orgTranslateX = ((Rectangle)(t.getSource())).getTranslateX();
             orgTranslateY = ((Rectangle)(t.getSource())).getTranslateY();
+            selected_rectangle = (Rectangle)t.getSource();
+            selected_ellipse = null;
+            selected_rectangle.setStrokeWidth(25);
             }
         }
     };
@@ -108,9 +115,13 @@ public class Workspace extends AppWorkspaceComponent {
         public void handle(MouseEvent t) {
             if(getSelectedItem() == true)
             {
+           
             double offsetX = t.getSceneX() - orgSceneX;
+              
             double offsetY = t.getSceneY() - orgSceneY;
+          
             double newTranslateX = orgTranslateX + offsetX;
+            
             double newTranslateY = orgTranslateY + offsetY;
              
             ((Rectangle)(t.getSource())).setTranslateX(newTranslateX);
@@ -131,6 +142,9 @@ public class Workspace extends AppWorkspaceComponent {
             orgSceneY = t.getSceneY();
             orgTranslateX = ((Ellipse)(t.getSource())).getTranslateX();
             orgTranslateY = ((Ellipse)(t.getSource())).getTranslateY();
+            selected_ellipse = (Ellipse)t.getSource();
+            selected_rectangle = null;
+            selected_ellipse.setStrokeWidth(25);
             }
         }
     };
@@ -464,9 +478,14 @@ public class Workspace extends AppWorkspaceComponent {
         });
       
       clear.setOnAction((ActionEvent t) ->{
-           pane.getChildren().clear();
-           select.setSelected(false);
-           setSelectedItem(false);
+           //pane.getChildren().clear();
+          // selected_rectangle.relocate(5000, 5000);
+           pane.getChildren().remove(selected_rectangle);
+           selected_rectangle = null;
+           pane.getChildren().remove(selected_ellipse);
+           selected_ellipse = null;
+           //select.setSelected(false);
+           //setSelectedItem(false);
        // group_for_rectangles.getChildren().addAll(colorPicker, colorPicker2, colorPicker3, slider, rect, ellipse, clear);
        });
       
