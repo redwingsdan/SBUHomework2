@@ -12,7 +12,7 @@ package pm;
  * the application ran in.
  * 
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public enum PropertyType {

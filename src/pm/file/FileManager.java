@@ -14,7 +14,7 @@ import saf.components.AppFileComponent;
  * providing all I/O services.
  *
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public class FileManager implements AppFileComponent {

@@ -7,7 +7,7 @@ import saf.AppTemplate;
  * This class serves as the data management component for this application.
  *
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public class DataManager implements AppDataComponent {

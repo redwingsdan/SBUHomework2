@@ -1,13 +1,17 @@
 package pm.gui;
 
+import java.io.File;
 import java.io.IOException;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
@@ -15,6 +19,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -33,6 +38,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 import static pm.PropertyType.RECTANGLE_ICON;
 import properties_manager.PropertiesManager;
 import saf.ui.AppGUI;
@@ -48,7 +54,7 @@ import saf.ui.AppYesNoCancelDialogSingleton;
  * the user interface controls for editing work.
  *
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public class Workspace extends AppWorkspaceComponent {
@@ -116,7 +122,14 @@ public class Workspace extends AppWorkspaceComponent {
             {
                 selected_rectangle.setStroke(old);
             }
-            selected_rectangle = (Rectangle)t.getSource();
+       //      if((selected_rectangle.equals((Rectangle)t.getSource())))
+        //     {
+        //         selected_rectangle = null;
+         //    }
+          //   else
+          //   {
+                selected_rectangle = (Rectangle)t.getSource();
+         //    }
             if(selected_ellipse != null)
             {
                 selected_ellipse.setStroke(old);
@@ -125,8 +138,10 @@ public class Workspace extends AppWorkspaceComponent {
             old = selected_rectangle.getStroke();
             selected_rectangle.setStroke(Color.YELLOW);
             colorPicker.setValue((Color)selected_rectangle.getFill());
-            colorPicker2.setValue((Color)selected_rectangle.getStroke());
+            colorPicker2.setValue((Color) old);
             slider.setValue(selected_rectangle.getStrokeWidth());
+          //  ((Rectangle)(t.getSource())).toFront();
+     //       ((Rectangle)(t.getSource())).toBack();
             }
         }
     };
@@ -178,8 +193,10 @@ public class Workspace extends AppWorkspaceComponent {
             old = selected_ellipse.getStroke();
             selected_ellipse.setStroke(Color.YELLOW);
             colorPicker.setValue((Color)selected_ellipse.getFill());
-            colorPicker2.setValue((Color)selected_ellipse.getStroke());
+            colorPicker2.setValue((Color)old);
             slider.setValue(selected_ellipse.getStrokeWidth());
+            //((Ellipse)(t.getSource())).toFront();
+            //((Ellipse)(t.getSource())).toBack();
             }
         }
     };
@@ -328,7 +345,7 @@ public class Workspace extends AppWorkspaceComponent {
       
       
      // colorPicker3.setValue(Color.BEIGE);
-     colorPicker3.setValue(Color.YELLOW);
+     colorPicker3.setValue(Color.SNOW);
       colorPicker3.setLayoutX(0);
       colorPicker3.setLayoutY(600);
       
@@ -414,6 +431,8 @@ public class Workspace extends AppWorkspaceComponent {
           Button clear = new Button();
           ToggleButton select = new ToggleButton();
           Button snap = new Button();
+          Button front = new Button();
+          Button back = new Button();
           
           //String icon = RECTANGLE_ICON.toString();
           //String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
@@ -432,16 +451,69 @@ public class Workspace extends AppWorkspaceComponent {
           Image buttonImage5 = new Image("file:./images/Snapshot.png");
           snap.setGraphic(new ImageView(buttonImage5));
           
+          Image buttonImage6 = new Image("file:./images/MoveToFront.png");
+          front.setGraphic(new ImageView(buttonImage6));
+          
+          Image buttonImage7 = new Image("file:./images/MoveToBack.png");
+          back.setGraphic(new ImageView(buttonImage7));
+          
+          snap.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                WritableImage snapshot = pane.snapshot(new SnapshotParameters(), null);
+                File file = new File("Pose.png");
+                try
+                  {
+                  ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+                  }
+                catch(Exception e)
+                  {
+                      
+                  }
+            }
+        });
+          front.setLayoutX(150);
+          back.setLayoutX(60);
+          front.setLayoutY(100);
+          back.setLayoutY(100);
+          front.setOnAction((ActionEvent t) -> {
+              if(selected_rectangle != null & getSelectedItem() == true)
+                  {
+                  selected_rectangle.toFront();
+                  }
+              else if(selected_ellipse != null & getSelectedItem() == true)
+                  {
+                   selected_ellipse.toFront();  
+                  }
+              
+          });
+          
+           back.setOnAction((ActionEvent t) -> {
+              if(selected_rectangle != null & getSelectedItem() == true)
+                  {
+                  selected_rectangle.toBack();
+                  }
+              else if(selected_ellipse != null & getSelectedItem() == true)
+                  {
+                   selected_ellipse.toBack();  
+                  }
+              
+          });
+          
           rect.setOnAction((ActionEvent t) -> {
        setCurrentValue("RECTANGLE");
        select.setSelected(false);
        setSelectedItem(false);
+       gui.getPrimaryScene().setCursor(Cursor.CROSSHAIR);
+       clear.setDisable(true);
    });
       
        ellipse.setOnAction((ActionEvent t) -> {
        setCurrentValue("ELLIPSE");
        select.setSelected(false);
        setSelectedItem(false);
+       gui.getPrimaryScene().setCursor(Cursor.CROSSHAIR);
+       clear.setDisable(true);
    });
       
        colorPicker.setOnAction((ActionEvent t) -> {
@@ -527,6 +599,8 @@ public class Workspace extends AppWorkspaceComponent {
        
        workspace.getChildren().add(workspaceSplitPane);
        workspace.getChildren().add(pane);
+       workspace.getChildren().add(front);
+       workspace.getChildren().add(back);
        Pane x = new Pane();
        x.setLayoutX(1700);
        workspace.getChildren().add(x);
@@ -553,6 +627,7 @@ public class Workspace extends AppWorkspaceComponent {
            selected_rectangle = null;
            pane.getChildren().remove(selected_ellipse);
            selected_ellipse = null;
+           gui.getPrimaryScene().setCursor(Cursor.DEFAULT);
            //select.setSelected(false);
            //setSelectedItem(false);
        // group_for_rectangles.getChildren().addAll(colorPicker, colorPicker2, colorPicker3, slider, rect, ellipse, clear);
@@ -562,6 +637,8 @@ public class Workspace extends AppWorkspaceComponent {
            //setSelectedItem(!getSelectedItem());
            select.setSelected(true);
            setSelectedItem(true);
+           gui.getPrimaryScene().setCursor(Cursor.DEFAULT);
+           clear.setDisable(false);
            //System.out.println(getSelectedItem());
        });
       
