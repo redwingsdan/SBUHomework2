@@ -68,8 +68,9 @@ public class Workspace extends AppWorkspaceComponent {
     BorderPane pane;
     Pane shapeToolbar;
     Pane colorToolbar;
+    Pane arrowToolbar;
     
-    BorderPane workspaceSplitPane;
+   GridPane workspaceSplitPane;
     
     double starting_point_x, starting_point_y ;
 
@@ -84,6 +85,8 @@ public class Workspace extends AppWorkspaceComponent {
    Ellipse new_ellipse = null;
    
    Ellipse selected_ellipse = null;
+   
+   Button clear;
    
    Paint old;
 
@@ -140,6 +143,7 @@ public class Workspace extends AppWorkspaceComponent {
             colorPicker.setValue((Color)selected_rectangle.getFill());
             colorPicker2.setValue((Color) old);
             slider.setValue(selected_rectangle.getStrokeWidth());
+            clear.setDisable(false);
           //  ((Rectangle)(t.getSource())).toFront();
      //       ((Rectangle)(t.getSource())).toBack();
             }
@@ -195,6 +199,7 @@ public class Workspace extends AppWorkspaceComponent {
             colorPicker.setValue((Color)selected_ellipse.getFill());
             colorPicker2.setValue((Color)old);
             slider.setValue(selected_ellipse.getStrokeWidth());
+            clear.setDisable(false);
             //((Ellipse)(t.getSource())).toFront();
             //((Ellipse)(t.getSource())).toBack();
             }
@@ -305,12 +310,12 @@ public class Workspace extends AppWorkspaceComponent {
    
    public VBox addHBox(Slider slider, ColorPicker colorPicker, ColorPicker colorPicker2, ColorPicker colorPicker3, Button snap) {
     VBox hbox = new VBox();
-    hbox.setPadding(new Insets(15, 15, 15, 15));
+    hbox.setPadding(new Insets(2, 0, 2, 40)); //15
     hbox.setSpacing(20);
     hbox.setMinWidth(200);
     hbox.setMaxWidth(200);
-    hbox.setMinHeight(700);
-    hbox.setMaxHeight(1500);
+    hbox.setMinHeight(1200);
+    hbox.setMaxHeight(2000);
     //hbox.setStyle("-fx-background-color: #336699;");
 
    // Button buttonCurrent = new Button("Current");
@@ -324,21 +329,21 @@ public class Workspace extends AppWorkspaceComponent {
       slider.setMajorTickUnit(2);
       slider.setMinorTickCount(1);
       slider.setBlockIncrement(1);
-      slider.setLayoutX(0);
-      slider.setLayoutY(700);
+      slider.setLayoutX(50);
+      slider.setLayoutY(900);
      
       
       
       colorPicker.setValue(Color.RED);
-      colorPicker.setLayoutX(0);
-      colorPicker.setLayoutY(200);
+      colorPicker.setLayoutX(50);
+      colorPicker.setLayoutY(400);
       
       
       
       
       colorPicker2.setValue(Color.BLUE);
-      colorPicker2.setLayoutX(0);
-      colorPicker2.setLayoutY(400);
+      colorPicker2.setLayoutX(50);
+      colorPicker2.setLayoutY(600);
       
       
       
@@ -346,8 +351,8 @@ public class Workspace extends AppWorkspaceComponent {
       
      // colorPicker3.setValue(Color.BEIGE);
      colorPicker3.setValue(Color.SNOW);
-      colorPicker3.setLayoutX(0);
-      colorPicker3.setLayoutY(600);
+      colorPicker3.setLayoutX(50);
+      colorPicker3.setLayoutY(800);
       
       snap.setPrefWidth(50);
       
@@ -366,33 +371,63 @@ public class Workspace extends AppWorkspaceComponent {
       Text t4 = new Text();
       t4.setText("Border Thickness");
       t4.setFont(Font.font ("Verdana", FontWeight.BOLD, 20));
-      
+     
+   // hbox.getChildren().addAll(rect, ellipse, clear, select);  
     hbox.getChildren().addAll(t3, colorPicker3, t1, colorPicker, t2, colorPicker2, t4, slider, snap);
+    
 
     return hbox;
 }
    
    public HBox addVBox(ToggleButton rect, Button ellipse, Button clear, Button select){
     HBox vbox = new HBox();
-    vbox.setPadding(new Insets(20));
+    vbox.setPadding(new Insets(20, 0, 5, 20));
     vbox.setSpacing(12);
+    vbox.setMaxHeight(1200);
 
        // Button test = new Button();
        // test.setTranslateY(150);
        // test.setTranslateX(-100);
     
      // rect.setText("RECTANGLE");
-      rect.setLayoutY(10);
+     // rect.setLayoutY(10);
       
      // ellipse.setText("ELLIPSE");
-      ellipse.setLayoutY(10);
+      //ellipse.setLayoutY(10);
       
      // clear.setText("CLEAR");
-      clear.setLayoutY(10);
+      //clear.setLayoutY(10);
       
-      select.setLayoutY(10);
+      //select.setLayoutY(10);
         
       vbox.getChildren().addAll(rect, ellipse, clear, select);
+
+
+    return vbox;
+}
+   
+    public HBox addVBox2(Button front, Button back){
+    HBox vbox = new HBox();
+    vbox.setPadding(new Insets(40, 0, 40, 75));
+    vbox.setSpacing(25);
+    vbox.setMaxHeight(1200);
+
+       // Button test = new Button();
+       // test.setTranslateY(150);
+       // test.setTranslateX(-100);
+    
+     // rect.setText("RECTANGLE");
+      //rect.setLayoutY(10);
+      
+     // ellipse.setText("ELLIPSE");
+     // ellipse.setLayoutY(10);
+      
+     // clear.setText("CLEAR");
+      //clear.setLayoutY(10);
+      
+      //select.setLayoutY(10);
+        
+      vbox.getChildren().addAll(back, front);
 
 
     return vbox;
@@ -418,7 +453,8 @@ public class Workspace extends AppWorkspaceComponent {
         pane = new BorderPane();
         
         shapeToolbar = new FlowPane(Orientation.VERTICAL);
-        colorToolbar = new FlowPane(Orientation.VERTICAL);
+        colorToolbar = new FlowPane(Orientation.HORIZONTAL);
+        arrowToolbar = new FlowPane(Orientation.HORIZONTAL);
         
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         
@@ -427,12 +463,21 @@ public class Workspace extends AppWorkspaceComponent {
         
           
           Button rect = new Button();
+          rect.setMinSize(50, 50);
           Button ellipse = new Button();
-          Button clear = new Button();
+          ellipse.setMinSize(50, 50);
+          clear = new Button();
+          clear.setMinSize(50, 50);
           ToggleButton select = new ToggleButton();
+          select.setMinSize(50, 50);
           Button snap = new Button();
+         // snap.setMinSize(50, 50);
           Button front = new Button();
+          front.setMinSize(50, 50);
           Button back = new Button();
+          back.setMinSize(50, 50);
+          clear.setDisable(true);
+          select.setDisable(true);
           
           //String icon = RECTANGLE_ICON.toString();
           //String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
@@ -563,12 +608,16 @@ public class Workspace extends AppWorkspaceComponent {
         colorToolbar.getChildren().add(addVBox(select, clear, rect, ellipse));
         VBox hbox = addHBox(slider, colorPicker, colorPicker2, colorPicker3, snap);
         shapeToolbar.getChildren().add(hbox);
+        arrowToolbar.getChildren().add(addVBox2(front, back));
         
-        workspaceSplitPane = new BorderPane();
-        workspaceSplitPane.setLeft(colorToolbar);
-        workspaceSplitPane.setBottom(shapeToolbar);
-        workspaceSplitPane.getBottom().setStyle("-fx-background-color: #8fd8d8;");
-        workspaceSplitPane.getLeft().setStyle("-fx-background-color: #8fd8d8;");
+        workspaceSplitPane = new GridPane();
+        //workspaceSplitPane.setHgap(10);
+        workspaceSplitPane.add(colorToolbar, 0, 1);
+        workspaceSplitPane.add(arrowToolbar, 0, 2);
+        workspaceSplitPane.add(shapeToolbar, 0, 3);
+      // workspaceSplitPane.setLeft(shapeToolbar);
+       // workspaceSplitPane.getBottom().setStyle("-fx-background-color: #fff5ee;");
+        workspaceSplitPane.setStyle("-fx-background-color: #BCBCFF;");
         
         //group_for_rectangles.setTr
         
@@ -599,8 +648,8 @@ public class Workspace extends AppWorkspaceComponent {
        
        workspace.getChildren().add(workspaceSplitPane);
        workspace.getChildren().add(pane);
-       workspace.getChildren().add(front);
-       workspace.getChildren().add(back);
+       //workspace.getChildren().add(front);
+       //workspace.getChildren().add(back);
        Pane x = new Pane();
        x.setLayoutX(1700);
        workspace.getChildren().add(x);
@@ -612,9 +661,9 @@ public class Workspace extends AppWorkspaceComponent {
       
        colorPicker3.setOnAction((ActionEvent t) -> {
         gui.getPrimaryScene().setFill(colorPicker3.getValue());
-        System.out.println(colorPicker3.getValue().toString());
+       // System.out.println(colorPicker3.getValue().toString());
         pane.setStyle("-fx-background-color: #" + colorPicker3.getValue().toString().substring(2,8) + ";");
-        System.out.println(group_for_rectangles.getStyle());
+       // System.out.println(group_for_rectangles.getStyle());
        // workspace.getChildren().add(group_for_rectangles);
         //group_for_rectangles.setStyle("-fx-background-color: black;");
         
@@ -628,6 +677,16 @@ public class Workspace extends AppWorkspaceComponent {
            pane.getChildren().remove(selected_ellipse);
            selected_ellipse = null;
            gui.getPrimaryScene().setCursor(Cursor.DEFAULT);
+           clear.setDisable(true);
+           int size = pane.getChildren().size();
+           if(pane.getChildren().size() == 1)
+              {
+                  select.setDisable(true);
+              }
+           else
+              {
+                 select.setDisable(false); 
+              }
            //select.setSelected(false);
            //setSelectedItem(false);
        // group_for_rectangles.getChildren().addAll(colorPicker, colorPicker2, colorPicker3, slider, rect, ellipse, clear);
@@ -635,10 +694,11 @@ public class Workspace extends AppWorkspaceComponent {
       
       select.setOnAction((ActionEvent t) -> {
            //setSelectedItem(!getSelectedItem());
+           gui.getPrimaryScene().setCursor(Cursor.DEFAULT);
            select.setSelected(true);
            setSelectedItem(true);
-           gui.getPrimaryScene().setCursor(Cursor.DEFAULT);
-           clear.setDisable(false);
+           
+          // clear.setDisable(false);
            //System.out.println(getSelectedItem());
        });
       
@@ -775,6 +835,7 @@ public class Workspace extends AppWorkspaceComponent {
 
             new_rectangle = null ;
             new_rectangle_is_being_drawn = false ;
+            select.setDisable(false); 
          }
          
          if(new_ellipse_is_being_drawn = true & getCurrentValue().equals("ELLIPSE") & getSelectedItem() == false)
@@ -786,21 +847,13 @@ public class Workspace extends AppWorkspaceComponent {
              
              new_ellipse = null;
              new_ellipse_is_being_drawn = false;
+             select.setDisable(false); 
          }
       } ) ;
       
       
      
-    //  new_rectangle = new Rectangle();
-    //  new_rectangle.setX( 0 ) ;
-    //  new_rectangle.setY( 0 ) ;
-    //  new_rectangle.setWidth( 10 ) ;
-    //  new_rectangle.setHeight( 10 ) ;
-      
-  //    new_rectangle.setLayoutX(0);
-  //    new_rectangle.setLayoutY(0);
-      
-    //   group_for_rectangles.getChildren().add( new_rectangle ) ;
+           
     }
     
     /**

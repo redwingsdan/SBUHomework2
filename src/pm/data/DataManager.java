@@ -25,6 +25,10 @@ public class DataManager implements AppDataComponent {
 	app = initApp;
     }
 
+    public AppTemplate getApp()
+    {
+        return app;
+    }
     /**
      * This function clears out the HTML tree and reloads it with the minimal
      * tags, like html, head, and body such that the user can begin editing a
