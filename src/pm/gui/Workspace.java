@@ -96,6 +96,8 @@ public class Workspace extends AppWorkspaceComponent {
    
    Button clear;
    
+   ToggleButton select;
+   
    Paint old;
 
    boolean new_rectangle_is_being_drawn = false ;
@@ -480,7 +482,7 @@ public class Workspace extends AppWorkspaceComponent {
           ellipse.setMinSize(50, 50);
           clear = new Button();
           clear.setMinSize(50, 50);
-          ToggleButton select = new ToggleButton();
+          select = new ToggleButton();
           select.setMinSize(50, 50);
           Button snap = new Button();
          // snap.setMinSize(50, 50);
@@ -677,6 +679,7 @@ public class Workspace extends AppWorkspaceComponent {
         gui.getPrimaryScene().setFill(colorPicker3.getValue());
        // System.out.println(colorPicker3.getValue().toString());
         pane.setStyle("-fx-background-color: #" + colorPicker3.getValue().toString().substring(2,8) + ";");
+        DataManager.setBGColor(colorPicker3.getValue().toString().substring(2,8));
        // System.out.println(group_for_rectangles.getStyle());
        // workspace.getChildren().add(group_for_rectangles);
         //group_for_rectangles.setStyle("-fx-background-color: black;");
@@ -871,6 +874,7 @@ public class Workspace extends AppWorkspaceComponent {
              new_ellipse.setFill(colorPicker.getValue());
              new_ellipse.setStroke(colorPicker2.getValue());
              new_ellipse.setStrokeWidth(slider.valueProperty().intValue());
+             DataManager.addEll(new_ellipse);
              
              new_ellipse = null;
              new_ellipse_is_being_drawn = false;
@@ -905,10 +909,13 @@ public class Workspace extends AppWorkspaceComponent {
     public void reloadWorkspace() {
        
         ArrayList<Rectangle> rect = FileManager.getNodes();
+        ArrayList<Ellipse> ell = FileManager.getNodes2();
+        String p = FileManager.getBackground();
         try
         {
         if(rect.size() != 0)
         {
+            select.setDisable(false);
             pane.getChildren().clear();
             for(int i = 0; i < rect.size(); i++)
             {
@@ -923,5 +930,36 @@ public class Workspace extends AppWorkspaceComponent {
         {
             
         }
+        try
+        {
+        if(ell.size() != 0)
+        {
+             select.setDisable(false);
+            //pane.getChildren().clear();
+            for(int i = 0; i < ell.size(); i++)
+            {
+                pane.getChildren().add(ell.get(i));
+                DataManager.addEll(ell.get(i));
+                ell.get(i).setOnMousePressed(ellipseOnMousePressedEventHandler);
+                ell.get(i).setOnMouseDragged(ellipseOnMouseDraggedEventHandler);
+            }
+        }
+        }
+        catch(Exception e)
+        {
+            
+        }
+        try
+        {
+           if(p != null)
+           {
+        //System.out.println(p.substring(1,7).toString());
+        pane.setStyle("-fx-background-color: #" + p.substring(1,7) + ";");
+           }
+        }
+        catch(Exception e)
+        {
+        }
+        
     }
 }

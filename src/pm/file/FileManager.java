@@ -13,6 +13,7 @@ import java.util.Map;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -38,6 +39,8 @@ import saf.components.AppFileComponent;
 public class FileManager implements AppFileComponent {
 
      static ArrayList<Rectangle> nodes;
+     static ArrayList<Ellipse> nodes2;
+     static String background;
     /**
      * This method is for saving user work, which in the case of this
      * application means the data that constitutes the page DOM.
@@ -55,14 +58,14 @@ public class FileManager implements AppFileComponent {
 
    /*    
       */  
-   System.out.println("SAVE WAS CALLED");
+        //System.out.println("SAVE WAS CALLED");
         StringWriter sw = new StringWriter();
 
 	// BUILD THE HTMLTags ARRAY
 	DataManager dataManager = (DataManager)data;
 
 	// THEN THE TREE
-        int size = DataManager.getRects().size();
+        //int size = DataManager.getRects().size();
 	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         for(int i = 0; i < DataManager.getRects().size(); i++)
         {
@@ -75,12 +78,33 @@ public class FileManager implements AppFileComponent {
         }
 	JsonArray rectArray = arrayBuilder.build();
 	// THEN PUT IT ALL TOGETHER IN A JsonObject
+        JsonArrayBuilder arrayBuilder2 = Json.createArrayBuilder();
+        for(int i = 0; i < DataManager.getElls().size(); i++)
+        {
+            Ellipse root2 = (Ellipse) DataManager.getElls().get(i);
+            //JsonArray rectArray = arrayBuilder.build();
+            //JsonObject tagObject = makeTagJsonObject(root, 1);
+           // arrayBuilder.add(root);
+            JsonObject ellObject = makeTagJsonObject2(root2);
+            arrayBuilder2.add(ellObject);      
+        }
+        JsonArray ellArray = arrayBuilder2.build();
+        
+        JsonArrayBuilder arrayBuilder3 = Json.createArrayBuilder();
+        JsonObject backgroundObject = makeTagJsonObject3(DataManager.getBGColor());
+        arrayBuilder3.add(backgroundObject);
+        JsonArray backgroundArray = arrayBuilder3.build();
+        
+        
 	JsonObject dataManagerJSO = Json.createObjectBuilder()
 		.add("rectangles", rectArray)
+                .add("ellipses", ellArray)
+                .add("background", backgroundArray)
 		//.add("y_location", dataManager.getCSSText())
                 //ellipses
 		.build();
 	
+        
 	// AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
 	Map<String, Object> properties = new HashMap<>(1);
 	properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -106,6 +130,7 @@ public class FileManager implements AppFileComponent {
 	//ArrayList<String> legalParents = rect.getLegalParents();
 	JsonObject jso = Json.createObjectBuilder()
 		//.add("name", rect.getTagName())
+                
 		.add("x_location", rect.getX())
 		.add("y_location", rect.getY())
                 .add("height", rect.getHeight())
@@ -116,7 +141,34 @@ public class FileManager implements AppFileComponent {
 		//.add(JSON_TAG_PARENT_INDEX, tag.getParentIndex())
 		.build();
 	return jso;
-    }    
+    } 
+    
+     private JsonObject makeTagJsonObject2(Ellipse ell) {
+	//String rectName;
+	//HashMap<String, String> attributes = rect.getAttributes();
+	//ArrayList<String> legalParents = rect.getLegalParents();
+	JsonObject jso = Json.createObjectBuilder()
+		//.add("name", rect.getTagName())
+                
+		.add("x_location", ell.getCenterX())
+		.add("y_location", ell.getCenterY())
+                .add("height", ell.getRadiusX())
+                .add("width", ell.getRadiusY())
+		.add("fill_color_string", ell.getFill().toString())
+		.add("border_color_string", ell.getStroke().toString())
+		.add("border_width", ell.getStrokeWidth())
+		//.add(JSON_TAG_PARENT_INDEX, tag.getParentIndex())
+		.build();
+	return jso;
+    } 
+     
+     private JsonObject makeTagJsonObject3(String s)
+     {
+        JsonObject jso = Json.createObjectBuilder()
+                .add("background", s)
+                .build();
+        return jso;
+     }
       
     /**
      * This method loads data from a JSON formatted file into the data 
@@ -153,35 +205,35 @@ public class FileManager implements AppFileComponent {
         Rectangle rootData = new Rectangle();
       //  for(int i = 0; i < rootJso.size(); i++)
       //  {
-            System.out.println(rootJso.get("x_location").toString());
+           // System.out.println(rootJso.get("x_location").toString());
             Double x = Double.parseDouble(rootJso.get("x_location").toString());
             rootData.setX(x);
             
             
-            System.out.println(rootJso.get("y_location").toString());
+           // System.out.println(rootJso.get("y_location").toString());
             Double y = Double.parseDouble(rootJso.get("y_location").toString());
             rootData.setY(y);
             
-            System.out.println(rootJso.get("height").toString());
+          //  System.out.println(rootJso.get("height").toString());
             Double h = Double.parseDouble(rootJso.get("height").toString());
             rootData.setHeight(h);
             
-            System.out.println(rootJso.get("width").toString());
+          //  System.out.println(rootJso.get("width").toString());
             Double w = Double.parseDouble(rootJso.get("width").toString());
             rootData.setWidth(w);
             
-            System.out.println(rootJso.get("fill_color_string").toString().substring(3,9));
+          //  System.out.println(rootJso.get("fill_color_string").toString().substring(3,9));
             //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
             Paint p = Paint.valueOf(rootJso.get("fill_color_string").toString().substring(3,9));
             
             rootData.setFill(p);
             
-            System.out.println(rootJso.get("border_color_string").toString().substring(3,9));
+           // System.out.println(rootJso.get("border_color_string").toString().substring(3,9));
             //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
             Paint bor = Paint.valueOf(rootJso.get("border_color_string").toString().substring(3,9));
             rootData.setStroke(bor);
             
-            System.out.println(rootJso.get("border_width").toString());
+           // System.out.println(rootJso.get("border_width").toString());
             Double b = Double.parseDouble(rootJso.get("border_width").toString());
             rootData.setStrokeWidth(b);
            // rootData.setX();
@@ -190,8 +242,60 @@ public class FileManager implements AppFileComponent {
 	//TreeItem root = dataManager.getHTMLRoot();
             nodes.add(rootData);
         }
+        JsonArray jsonTagsArray2 = json.getJsonArray("ellipses");
+	//loadTreeTags(jsonTagTreeArray, dataManager);
+        nodes2 = new ArrayList();
+	
+	// FIRST UPDATE THE ROOT
+        for(int j = 0; j < jsonTagsArray2.size(); j++)
+        {
+	JsonObject rootJso = jsonTagsArray2.getJsonObject(j);
+        Ellipse rootData = new Ellipse();
+      //  for(int i = 0; i < rootJso.size(); i++)
+      //  {
+           // System.out.println(rootJso.get("x_location").toString());
+            Double x = Double.parseDouble(rootJso.get("x_location").toString());
+            rootData.setCenterX(x);
+            
+            
+          //  System.out.println(rootJso.get("y_location").toString());
+            Double y = Double.parseDouble(rootJso.get("y_location").toString());
+            rootData.setCenterY(y);
+            
+           // System.out.println(rootJso.get("height").toString());
+            Double h = Double.parseDouble(rootJso.get("height").toString());
+            rootData.setRadiusX(h);
+            
+           // System.out.println(rootJso.get("width").toString());
+            Double w = Double.parseDouble(rootJso.get("width").toString());
+            rootData.setRadiusY(w);
+            
+           // System.out.println(rootJso.get("fill_color_string").toString().substring(3,9));
+            //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
+            Paint p = Paint.valueOf(rootJso.get("fill_color_string").toString().substring(3,9));
+            
+            rootData.setFill(p);
+            
+           // System.out.println(rootJso.get("border_color_string").toString().substring(3,9));
+            //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
+            Paint bor = Paint.valueOf(rootJso.get("border_color_string").toString().substring(3,9));
+            rootData.setStroke(bor);
+            
+           // System.out.println(rootJso.get("border_width").toString());
+            Double b = Double.parseDouble(rootJso.get("border_width").toString());
+            rootData.setStrokeWidth(b);
+           // rootData.setX();
+       // }
+	//Rectangle rootData = loadRect(rootJso);
+	//TreeItem root = dataManager.getHTMLRoot();
+            nodes2.add(rootData);
+        }
+        
+        JsonArray jsonTagsArray3 = json.getJsonArray("background");
 	//root.getChildren().clear();
 	//root.setValue(rootData);
+            String bg = (jsonTagsArray3.getJsonObject(0).get("background").toString());
+            background = bg;
 	
 	// AND GET THE CSS CONTENT
 	//String cssContent = json.getString(JSON_CSS_CONTENT);
@@ -268,4 +372,12 @@ public class FileManager implements AppFileComponent {
    {
        return nodes;
    }
+    public static ArrayList<Ellipse> getNodes2()
+   {
+       return nodes2;
+   }
+    public static String getBackground()
+    {
+        return background;
+    }
 }
