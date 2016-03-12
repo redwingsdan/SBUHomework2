@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.control.TreeItem;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -35,6 +37,7 @@ import saf.components.AppFileComponent;
  */
 public class FileManager implements AppFileComponent {
 
+     static ArrayList<Rectangle> nodes;
     /**
      * This method is for saving user work, which in the case of this
      * application means the data that constitutes the page DOM.
@@ -59,10 +62,11 @@ public class FileManager implements AppFileComponent {
 	DataManager dataManager = (DataManager)data;
 
 	// THEN THE TREE
+        int size = DataManager.getRects().size();
 	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        for(int i = 0; i < dataManager.getApp().getGUI().getAppPane().getChildren().size(); i++)
+        for(int i = 0; i < DataManager.getRects().size(); i++)
         {
-            Rectangle root = (Rectangle) dataManager.getApp().getGUI().getAppPane().getChildren().get(i);
+            Rectangle root = (Rectangle) DataManager.getRects().get(i);
             //JsonArray rectArray = arrayBuilder.build();
             //JsonObject tagObject = makeTagJsonObject(root, 1);
            // arrayBuilder.add(root);
@@ -129,8 +133,97 @@ public class FileManager implements AppFileComponent {
      */
     @Override
     public void loadData(AppDataComponent data, String filePath) throws IOException {
-
+	// CLEAR THE OLD DATA OUT
+        //System.out.println("LOAD IS CALLDE");
+	DataManager dataManager = (DataManager)data;
+	dataManager.reset();
+	
+	// LOAD THE JSON FILE WITH ALL THE DATA
+	JsonObject json = loadJSONFile(filePath);
+	
+	// LOAD THE TAG TREE
+	JsonArray jsonTagsArray = json.getJsonArray("rectangles");
+	//loadTreeTags(jsonTagTreeArray, dataManager);
+        nodes = new ArrayList();
+	
+	// FIRST UPDATE THE ROOT
+        for(int j = 0; j < jsonTagsArray.size(); j++)
+        {
+	JsonObject rootJso = jsonTagsArray.getJsonObject(j);
+        Rectangle rootData = new Rectangle();
+      //  for(int i = 0; i < rootJso.size(); i++)
+      //  {
+            System.out.println(rootJso.get("x_location").toString());
+            Double x = Double.parseDouble(rootJso.get("x_location").toString());
+            rootData.setX(x);
+            
+            
+            System.out.println(rootJso.get("y_location").toString());
+            Double y = Double.parseDouble(rootJso.get("y_location").toString());
+            rootData.setY(y);
+            
+            System.out.println(rootJso.get("height").toString());
+            Double h = Double.parseDouble(rootJso.get("height").toString());
+            rootData.setHeight(h);
+            
+            System.out.println(rootJso.get("width").toString());
+            Double w = Double.parseDouble(rootJso.get("width").toString());
+            rootData.setWidth(w);
+            
+            System.out.println(rootJso.get("fill_color_string").toString().substring(3,9));
+            //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
+            Paint p = Paint.valueOf(rootJso.get("fill_color_string").toString().substring(3,9));
+            
+            rootData.setFill(p);
+            
+            System.out.println(rootJso.get("border_color_string").toString().substring(3,9));
+            //Double f = Double.parseDouble(rootJso.get("fill_color_string").toString());
+            Paint bor = Paint.valueOf(rootJso.get("border_color_string").toString().substring(3,9));
+            rootData.setStroke(bor);
+            
+            System.out.println(rootJso.get("border_width").toString());
+            Double b = Double.parseDouble(rootJso.get("border_width").toString());
+            rootData.setStrokeWidth(b);
+           // rootData.setX();
+       // }
+	//Rectangle rootData = loadRect(rootJso);
+	//TreeItem root = dataManager.getHTMLRoot();
+            nodes.add(rootData);
+        }
+	//root.getChildren().clear();
+	//root.setValue(rootData);
+	
+	// AND GET THE CSS CONTENT
+	//String cssContent = json.getString(JSON_CSS_CONTENT);
+	//dataManager.setCSSText(cssContent);
     }
+    
+     private Rectangle loadRect(JsonObject tag) {
+	    Rectangle tagToLoad = new Rectangle();
+            JsonArray attributesArray = tag.getJsonArray("rectangles");
+	for (int k = 0; k < attributesArray.size(); k++) {
+		JsonObject attributeJso = attributesArray.getJsonObject(k);
+                String attributeName = attributeJso.getString("x_location");
+		//String attributeValue = attributeJso.getString(JSON_TAG_ATTRIBUTE_VALUE);
+                
+              //  tagToLoad.setX(tag..getX());
+		
+               // .add("y_location", rect.getY())
+              //  .add("height", rect.getHeight())
+               // .add("width", rect.getWidth())
+		//.add("fill_color_string", rect.getFill().toString())
+		//.add("border_color_string", rect.getStroke().toString())
+		//.add("border_width", rect.getStrokeWidth())
+                
+	    }
+	    //tagToLoad.setNodeIndex(tag.getInt(JSON_TAG_NODE_INDEX));
+	   // tagToLoad.setParentIndex(tag.getInt(JSON_TAG_PARENT_INDEX));
+            
+	    return tagToLoad;
+            
+    }
+    
+    
 
     // HELPER METHOD FOR LOADING DATA FROM A JSON FORMAT
     private JsonObject loadJSONFile(String jsonFilePath) throws IOException {
@@ -170,4 +263,9 @@ public class FileManager implements AppFileComponent {
 	// NO USE OF THIS METHOD SINCE IT NEVER IMPORTS
 	// EXPORTED WEB PAGES
     }
+    
+   public static ArrayList<Rectangle> getNodes()
+   {
+       return nodes;
+   }
 }

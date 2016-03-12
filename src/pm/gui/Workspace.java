@@ -2,6 +2,9 @@ package pm.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -40,6 +43,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import static pm.PropertyType.RECTANGLE_ICON;
+import pm.data.DataManager;
+import pm.file.FileManager;
 import properties_manager.PropertiesManager;
 import saf.ui.AppGUI;
 import saf.AppTemplate;
@@ -65,6 +70,9 @@ public class Workspace extends AppWorkspaceComponent {
     // IT KNOWS THE GUI IT IS PLACED INSIDE
     AppGUI gui;
     
+    //ArrayList<Rectangle> rectArray = new ArrayList<Rectangle>();
+    
+    DataManager data;
     BorderPane pane;
     Pane shapeToolbar;
     Pane colorToolbar;
@@ -460,7 +468,11 @@ public class Workspace extends AppWorkspaceComponent {
         
         //gui.getPrimaryScene()
         gui.getWindow().setTitle("Pose Maker");
-        
+        try {
+            data = new DataManager(app);
+        } catch (Exception ex) {
+            Logger.getLogger(Workspace.class.getName()).log(Level.SEVERE, null, ex);
+        }
           
           Button rect = new Button();
           rect.setMinSize(50, 50);
@@ -551,6 +563,7 @@ public class Workspace extends AppWorkspaceComponent {
        setSelectedItem(false);
        gui.getPrimaryScene().setCursor(Cursor.CROSSHAIR);
        clear.setDisable(true);
+       selected_rectangle = null;
    });
       
        ellipse.setOnAction((ActionEvent t) -> {
@@ -559,6 +572,7 @@ public class Workspace extends AppWorkspaceComponent {
        setSelectedItem(false);
        gui.getPrimaryScene().setCursor(Cursor.CROSSHAIR);
        clear.setDisable(true);
+       selected_ellipse = null;
    });
       
        colorPicker.setOnAction((ActionEvent t) -> {
@@ -639,12 +653,12 @@ public class Workspace extends AppWorkspaceComponent {
         
        pane.setLayoutX(280);
        pane.setLayoutY(0);
-       pane.setMinHeight(920);
-       pane.setMinWidth(1700);
-       pane.setMaxHeight(920);
+       pane.setMinHeight(1120);
+       pane.setMinWidth(1900);
+       pane.setMaxHeight(1120);
        pane.setMaxWidth(1700);
        pane.setPrefWidth(1700);
-       pane.setPrefHeight(920);
+       pane.setPrefHeight(1120);
        
        workspace.getChildren().add(workspaceSplitPane);
        workspace.getChildren().add(pane);
@@ -673,6 +687,12 @@ public class Workspace extends AppWorkspaceComponent {
            //pane.getChildren().clear();
           // selected_rectangle.relocate(5000, 5000);
            pane.getChildren().remove(selected_rectangle);
+           
+            try {
+                  DataManager.removeRect(selected_rectangle);
+             } catch (Exception ex) {
+                 Logger.getLogger(Workspace.class.getName()).log(Level.SEVERE, null, ex);
+             }   
            selected_rectangle = null;
            pane.getChildren().remove(selected_ellipse);
            selected_ellipse = null;
@@ -832,7 +852,14 @@ public class Workspace extends AppWorkspaceComponent {
    
             // If all colors have been used we'll start re-using colors from the
             // beginning of the array.
-
+            //rectArray.add(new_rectangle);
+            
+             try {
+                 
+                  DataManager.addRect(new_rectangle);
+             } catch (Exception ex) {
+                 Logger.getLogger(Workspace.class.getName()).log(Level.SEVERE, null, ex);
+             }         
             new_rectangle = null ;
             new_rectangle_is_being_drawn = false ;
             select.setDisable(false); 
@@ -876,6 +903,25 @@ public class Workspace extends AppWorkspaceComponent {
      */
     @Override
     public void reloadWorkspace() {
-
+       
+        ArrayList<Rectangle> rect = FileManager.getNodes();
+        try
+        {
+        if(rect.size() != 0)
+        {
+            pane.getChildren().clear();
+            for(int i = 0; i < rect.size(); i++)
+            {
+                pane.getChildren().add(rect.get(i));
+                DataManager.addRect(rect.get(i));
+                rect.get(i).setOnMousePressed(rectangleOnMousePressedEventHandler);
+                rect.get(i).setOnMouseDragged(rectangleOnMouseDraggedEventHandler);
+            }
+        }
+        }
+        catch(Exception e)
+        {
+            
+        }
     }
 }

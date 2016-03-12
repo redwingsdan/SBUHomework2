@@ -1,5 +1,7 @@
 package pm.data;
 
+import java.util.ArrayList;
+import javafx.scene.shape.Rectangle;
 import saf.components.AppDataComponent;
 import saf.AppTemplate;
 
@@ -13,6 +15,8 @@ import saf.AppTemplate;
 public class DataManager implements AppDataComponent {
     // THIS IS A SHARED REFERENCE TO THE APPLICATION
     AppTemplate app;
+    
+    final static ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
 
     /**
      * THis constructor creates the data manager and sets up the
@@ -23,6 +27,30 @@ public class DataManager implements AppDataComponent {
     public DataManager(AppTemplate initApp) throws Exception {
 	// KEEP THE APP FOR LATER
 	app = initApp;
+        //rects = new ArrayList();
+        
+    }
+    
+    public static void addRect(Rectangle tag) {
+	rects.add(tag);
+        System.out.println(rects.size());
+	//hashTags.put(tag.tagName, tag);
+    }
+    
+    public static void removeRect(Rectangle tag) {
+	rects.remove(tag);
+        System.out.println(rects.size());
+	//hashTags.put(tag.tagName, tag);
+    }
+
+    /**
+     * Accessor method for getting all the tags.
+     *
+     * @return A list containing all the tags used by this data manager.
+     */
+    public static ArrayList<Rectangle> getRects() {
+        System.out.println(rects.size());
+	return rects;        
     }
 
     public AppTemplate getApp()
