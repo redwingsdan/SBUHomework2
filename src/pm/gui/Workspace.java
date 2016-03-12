@@ -168,6 +168,7 @@ public class Workspace extends AppWorkspaceComponent {
             if(getSelectedItem() == true)
             {
            
+                gui.updateToolbarControls(false);
             double offsetX = t.getSceneX() - orgSceneX;
               
             double offsetY = t.getSceneY() - orgSceneY;
@@ -224,6 +225,7 @@ public class Workspace extends AppWorkspaceComponent {
         public void handle(MouseEvent t) {
             if(getSelectedItem() == true)
             {
+                gui.updateToolbarControls(false);
             double offsetX = t.getSceneX() - orgSceneX;
             double offsetY = t.getSceneY() - orgSceneY;
             double newTranslateX = orgTranslateX + offsetX;
@@ -778,6 +780,7 @@ public class Workspace extends AppWorkspaceComponent {
       {
          if ( new_rectangle_is_being_drawn == true & getCurrentValue().equals("RECTANGLE") & getSelectedItem() == false)
          {
+             gui.updateToolbarControls(false);
             double current_ending_point_x = (event.getSceneX() +9);
             double current_ending_point_y = (event.getSceneY() +38);
             //double current_ending_point_x = event.getX() ;
@@ -805,6 +808,7 @@ public class Workspace extends AppWorkspaceComponent {
          
          if(new_ellipse_is_being_drawn == true & getCurrentValue().equals("ELLIPSE") & getSelectedItem() == false)
          {
+             gui.updateToolbarControls(false);
             double current_ending_point_x = (event.getSceneX() +9);
             double current_ending_point_y = (event.getSceneY() +38);
 
